@@ -1,1 +1,1 @@
-# FUll Stack Open palautusrepositorio
+# Full Stack Open palautusrepositorio
