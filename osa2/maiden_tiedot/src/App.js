@@ -11,8 +11,38 @@ const Filter = ({ newFilter, handleFilter }) => {
   )
 }
 
-const Country = ({ countriesToShow }) => {
+const Country = ({ country, handleClick, buttonClicked }) => {
+  if (buttonClicked) {
+    return (
+      <div>
+        <h1>{country.name}</h1>
+        <p>capital {country.capital}</p> 
+        <p>population {country.population}</p>
+        <h2>languages</h2>
+        <ul>
+          {country.languages.map(lang =>
+            <li key={lang.name}>{lang.name}</li>
+          )}
+        </ul>
+        <img src={country.flag} alt={country.name} width="350" height="200"></img>
+      </div>
+    )
+  }
+  return (
+    <div key={country.name}>
+      {country.name}<button type="button" onClick={handleClick}>show</button>
+    </div>
+  )
+}
+
+const Countries = ({ countriesToShow}) => {
   const oneCountry = countriesToShow[0]
+  const [ buttonClicked, setClicked ] = useState(false)
+
+  const handleClick = () => {
+    setClicked(true)
+  }
+
   if (countriesToShow.length > 10) {
     return <p>Too many matches, specify another filter</p>
   } else if (countriesToShow.length === 1) {
@@ -24,19 +54,20 @@ const Country = ({ countriesToShow }) => {
         <h2>languages</h2>
         <ul>
           {oneCountry.languages.map(lang =>
-            <li>{lang.name}</li>
+            <li key={lang.name}>{lang.name}</li>
           )}
         </ul>
         <img src={oneCountry.flag} alt={oneCountry.name} width="350" height="200"></img>
       </div>
     )
   }
+  
   return (
-    <ul>
-      {countriesToShow.map(country =>
-        <p key={country.name}>{country.name}</p>
-      )}
-    </ul>
+      <ul>
+        {countriesToShow.map(country =>
+          <Country key={country.name} country={country} handleClick={handleClick} buttonClicked={buttonClicked} />
+        )}
+      </ul>
   )
 }
 
@@ -64,7 +95,7 @@ const App = () => {
   return (
     <div>
       <Filter newFilter={newFilter} handleFilter={handleFilter} />
-      <Country countriesToShow={countriesToShow} />
+      <Countries countriesToShow={countriesToShow} />
     </div>
   );
 }
