@@ -11,23 +11,53 @@ const Filter = ({ newFilter, handleFilter }) => {
   )
 }
 
-const Country = ({ country, handleClick, buttonClicked }) => {
-  if (buttonClicked) {
-    return (
-      <div>
-        <h1>{country.name}</h1>
-        <p>capital {country.capital}</p> 
-        <p>population {country.population}</p>
-        <h2>languages</h2>
-        <ul>
-          {country.languages.map(lang =>
-            <li key={lang.name}>{lang.name}</li>
-          )}
-        </ul>
-        <img src={country.flag} alt={country.name} width="350" height="200"></img>
-      </div>
-    )
-  }
+const Weather = ({ capital }) => {
+  const [ weather, setWeather] = useState(null)
+
+  useEffect(() => {
+    console.log('effect')
+    const api_key = '9bbf4f716062a51f6b48dd50977ac270' //process.env.REACT_APP_API_KEY
+    axios
+      .get('http://api.weatherstack.com/current?access_key=' + api_key + '&query=' + capital)
+      .then(response => {
+        console.log('promise fulfilled')
+        setWeather(response.data.current)
+      })
+  }, [])
+  console.log(weather)
+  const weatherInfo = weather ? (
+    <div>
+      <b>temperature:</b> {weather.temperature} Celsius<br></br>
+      <img src={weather.weather_icons[0]} alt='weather icon' width="100" height="100"></img><br></br>
+      <b>wind:</b> {weather.wind_speed} mph direction {weather.wind_dir}</div>
+  ) : <div>loading...</div>
+  return (
+    <div>
+      <h2>Weather in {capital}</h2>
+      {weatherInfo}
+    </div>
+  )
+}
+
+const OneCountry = ({ country }) => {
+  return (
+    <div>
+      <h1>{country.name}</h1>
+      capital {country.capital}<br></br>
+      population {country.population}
+      <h2>Spoken languages</h2>
+      <ul>
+        {country.languages.map(lang =>
+          <li key={lang.name}>{lang.name}</li>
+        )}
+      </ul>
+      <img src={country.flag} alt={country.name} width="350" height="200"></img>
+      <Weather capital={country.capital} />
+    </div>
+  )
+}
+
+const Country = ({ country, handleClick }) => {
   return (
     <div key={country.name}>
       {country.name}<button type="button" onClick={handleClick}>show</button>
@@ -35,37 +65,28 @@ const Country = ({ country, handleClick, buttonClicked }) => {
   )
 }
 
-const Countries = ({ countriesToShow}) => {
-  const oneCountry = countriesToShow[0]
-  const [ buttonClicked, setClicked ] = useState(false)
+const Countries = ({ countriesToShow }) => {
+  const [ oneCountry, setCountry ] = useState(null)
 
-  const handleClick = () => {
-    setClicked(true)
+  const handleClick = (country) => {
+    setCountry(country)
   }
 
   if (countriesToShow.length > 10) {
     return <p>Too many matches, specify another filter</p>
   } else if (countriesToShow.length === 1) {
     return (
-      <div>
-        <h1>{oneCountry.name}</h1>
-        <p>capital {oneCountry.capital}</p> 
-        <p>population {oneCountry.population}</p>
-        <h2>languages</h2>
-        <ul>
-          {oneCountry.languages.map(lang =>
-            <li key={lang.name}>{lang.name}</li>
-          )}
-        </ul>
-        <img src={oneCountry.flag} alt={oneCountry.name} width="350" height="200"></img>
-      </div>
+      <OneCountry country={countriesToShow[0]} />
+    )
+  } else if (oneCountry) {
+    return (
+      <OneCountry country={oneCountry} />
     )
   }
-  
   return (
       <ul>
         {countriesToShow.map(country =>
-          <Country key={country.name} country={country} handleClick={handleClick} buttonClicked={buttonClicked} />
+          <Country key={country.name} country={country} handleClick={() => handleClick(country)}  />
         )}
       </ul>
   )
