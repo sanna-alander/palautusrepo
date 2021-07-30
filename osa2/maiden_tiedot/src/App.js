@@ -16,7 +16,7 @@ const Weather = ({ capital }) => {
 
   useEffect(() => {
     console.log('effect')
-    const api_key = '9bbf4f716062a51f6b48dd50977ac270' //process.env.REACT_APP_API_KEY
+    const api_key = process.env.REACT_APP_API_KEY
     axios
       .get('http://api.weatherstack.com/current?access_key=' + api_key + '&query=' + capital)
       .then(response => {
@@ -84,11 +84,11 @@ const Countries = ({ countriesToShow }) => {
     )
   }
   return (
-      <ul>
-        {countriesToShow.map(country =>
-          <Country key={country.name} country={country} handleClick={() => handleClick(country)}  />
-        )}
-      </ul>
+    <ul>
+      {countriesToShow.map(country =>
+        <Country key={country.name} country={country} handleClick={() => handleClick(country)} />
+      )}
+    </ul>
   )
 }
 
