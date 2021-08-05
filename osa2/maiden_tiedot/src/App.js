@@ -27,8 +27,8 @@ const Weather = ({ capital }) => {
   console.log(weather)
   const weatherInfo = weather ? (
     <div>
-      <b>temperature:</b> {weather.temperature} Celsius<br></br>
-      <img src={weather.weather_icons[0]} alt='weather icon' width="100" height="100"></img><br></br>
+      <b>temperature:</b> {weather.temperature} Celsius<br/>
+      <img src={weather.weather_icons[0]} alt='weather icon' width="100" height="100"></img><br/>
       <b>wind:</b> {weather.wind_speed} mph direction {weather.wind_dir}</div>
   ) : <div>loading...</div>
   return (
@@ -43,7 +43,7 @@ const OneCountry = ({ country }) => {
   return (
     <div>
       <h1>{country.name}</h1>
-      capital {country.capital}<br></br>
+      capital {country.capital}<br/>
       population {country.population}
       <h2>Spoken languages</h2>
       <ul>
@@ -97,11 +97,9 @@ const App = () => {
   const [ newFilter, setFilter ] = useState('')
 
   useEffect(() => {
-    console.log('effect')
     axios
       .get('https://restcountries.eu/rest/v2/all')
       .then(response => {
-        console.log('promise fulfilled')
         setCountries(response.data)
       })
   }, [])
