@@ -31,11 +31,25 @@ const PersonForm = (props) => {
   )
 }
 
-const Person = ({ personsToShow }) => {
+const Person = ({ personsToShow, setPersons, persons }) => {
+
+  const removePerson = (id, name) => {
+    if (window.confirm(`Delete ${name}?`)) {
+      personService
+        .remove(id)
+        setPersons(persons.filter(p => p.id !== id))
+    }
+  }
+  
   return (
     <ul>
       {personsToShow.map(person =>
-        <p key={person.name}>{person.name} {person.number}</p>
+         <li key={person.name}> 
+          {person.name} {person.number}
+          <button type="button" onClick={
+            () => removePerson(person.id, person.name)
+          }>delete</button>
+         </li>
       )}
     </ul>
   )
@@ -48,7 +62,6 @@ const App = () => {
   const [ newFilter, setFilter ] = useState('')
 
   useEffect(() => {
-    console.log('effect')
     personService
       .getAll()
       .then(allPersons => {
@@ -56,12 +69,21 @@ const App = () => {
       })
   }, [])
 
-  console.log(persons)
-
   const addPerson = (event) => {
     event.preventDefault()
+    
     if (persons.some(p => p.name.includes(newName))) {
-      window.alert(`${newName} is already added to phonebook`)
+      if (window.confirm(`${newName} is already added in the phonebook. Do you want to replace the old number with a new one?`)) {
+        const person = persons.find(p => p.name === newName)
+        const changedNote = { ...person, number: newNumber }
+        const id = person.id
+        
+        personService.update(id, changedNote).then(response => {
+          setPersons(persons.map(person => person.id !== id ? person : response.data))
+          setNewName('')
+          setNewNumber('')
+        }) 
+      }
     } else {
       const personObject = { name: newName, number: newNumber }
       personService
@@ -77,7 +99,7 @@ const App = () => {
   const handleFilter = (event) => {
     setFilter(event.target.value)
   }
-
+  
   const personsToShow = persons.filter(
     person => person.name.toLowerCase().includes(newFilter.toLowerCase()))
 
@@ -88,7 +110,7 @@ const App = () => {
   const handleNumberChange = (event) => {
     setNewNumber(event.target.value)
   }
-
+  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -97,7 +119,7 @@ const App = () => {
       <PersonForm addPerson={addPerson} newName={newName} handleNameChange={handleNameChange} 
       newNumber={newNumber} handleNumberChange={handleNumberChange} />
       <h3>Numbers</h3>
-      <Person personsToShow={personsToShow} />
+      <Person personsToShow={personsToShow} setPersons={setPersons} persons={persons} />
     </div>
   )
 
