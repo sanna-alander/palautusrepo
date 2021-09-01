@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://10.39.78.33:3001/persons'
+const baseUrl = process.env.REACT_APP_BASE_URL
 
 const getAll = async () => {
     const request = axios.get(baseUrl)
@@ -25,4 +25,6 @@ const update = async (id, newObject) => {
     return response.data
 }
 
-export default { getAll, create, remove, update }
+const exportedObject = { getAll, create, remove, update }
+
+export default exportedObject
